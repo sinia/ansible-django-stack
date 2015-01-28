@@ -15,6 +15,7 @@
     - build-essential
     - ntp
     - htop
+    - mc
     - git
     - python-dev
     - python-pip
@@ -29,3 +30,9 @@
 - name: Install virtualenv
   pip: name=virtualenv
   tags: packages
+
+- name: ssh stop accepting client's locale on the server
+  lineinfile: dest=/etc/ssh/sshd_config state=present regexp="^#?\s*AcceptEnv LANG" line="# AcceptEnv LANG"
+
+- name: Set locales to en_US
+  shell: update-locale LC_ALL={{ locale }} LANG={{ locale }} LANGUAGE={{ locale }}
