@@ -1,13 +1,9 @@
 ---
 
-- name: Ensure bash, OpenSSl, and libssl are the latest versions
-  apt: name={{ item }} update_cache={{ update_apt_cache }} state=latest
-  with_items:
-    - bash
-    - openssl
-    - libssl-dev
-    - libssl-doc
+- name: Ensure all system packages are upgraded
+  apt: upgrade=dist update_cache=yes
   tags: packages
+  when: system_upgrade is defined and system_upgrade
 
 - name: Install base packages
   apt: name={{ item }} update_cache={{ update_apt_cache }} force=yes state=installed
@@ -23,16 +19,13 @@
     - supervisor
   tags: packages
 
-- name: Install newrelic
-  pip: name=newrelic
-  tags: packages
-
 - name: Install virtualenv
   pip: name=virtualenv
   tags: packages
 
-- name: ssh stop accepting client's locale on the server
+- name: sshd stop accepting client's locale
   lineinfile: dest=/etc/ssh/sshd_config state=present regexp="^#?\s*AcceptEnv LANG" line="# AcceptEnv LANG"
+#  when:
 
 - name: Set locales to en_US
   shell: update-locale LC_ALL={{ locale }} LANG={{ locale }} LANGUAGE={{ locale }}
